@@ -49,4 +49,14 @@ public class Coder {
     public void setClan(String clan) {
         this.clan = clan;
     }
+
+    @Override
+    public String toString() {
+        return "Coder{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", clan='" + clan + '\'' +
+                '}';
+    }
 }
