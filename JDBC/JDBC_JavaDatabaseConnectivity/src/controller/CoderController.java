@@ -62,17 +62,13 @@ public class CoderController {
     public void findByName() {
         String listCoder = " --- --- --- --- --- --- --- --- --- \n" +
                 " --- --- --- CODER LIST --- --- --- \n" +
-                " --- --- --- --- --- --- --- --- --- ";
+                " --- --- --- --- --- --- --- --- --- \n";
 
         String isName = JOptionPane.showInputDialog(null, "Ingresa el nombre que quieres buscar");
 
         Coder objCoder = (Coder) this.objCoderModel.findByName(isName);
+        JOptionPane.showMessageDialog(null, listCoder + objCoder.toString());
 
-        if(objCoder(isName)) {
-            JOptionPane.showMessageDialog(null, "Coder no fue encontrado");
-        } else {
-            JOptionPane.showMessageDialog(null, listCoder + objCoder.toString());
-        }
     }
 
     public void create (){

@@ -172,9 +172,6 @@ public class CoderModel implements CRUD {
                 objCoder.setAge(objResult.getInt("age"));
             }
 
-
-
-
         }catch (Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
@@ -184,7 +181,7 @@ public class CoderModel implements CRUD {
         return objCoder;
     }
 
-    public Object findByName(Object object){
+    public Object findByName(String name){
         //1. Abrir conexion
         Connection objConnection = ConfigDB.openConnection();
         Coder objCoder = null;
@@ -193,7 +190,7 @@ public class CoderModel implements CRUD {
             //2. Sentencia SQL
             String sql = "SELECT * FROM coder WHERE coder.name = ?;";
             PreparedStatement objPrepare = objConnection.prepareStatement(sql);
-            objPrepare.setString(1,"name");
+            objPrepare.setString(1,name);
 
             ResultSet objResult = objPrepare.executeQuery();
 
@@ -205,7 +202,7 @@ public class CoderModel implements CRUD {
                 objCoder.setClan(objResult.getString("Clan"));
             }
         }catch(Exception e){
-            JOptionPane.showMessageDialog(null, e.getMessage());
+            JOptionPane.showMessageDialog(null, e.getMessage() + "Error de mierda " );
         }
         ConfigDB.closeConnection();
         return objCoder;
