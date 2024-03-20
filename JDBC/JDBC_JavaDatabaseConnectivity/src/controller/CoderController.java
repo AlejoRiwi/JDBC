@@ -34,6 +34,47 @@ public class CoderController {
     }
 
 
+    public void delete () {
+        String listCoderString = "--- CODER LIST ---\n";
+        for (Object obj : this.objCoderModel.findAll()){
+            Coder objCoder = (Coder) obj;
+
+            listCoderString += objCoder.toString() + "\n";
+        }
+
+        int confirm = 1;
+
+        int isDelete = Integer.parseInt(JOptionPane.showInputDialog(listCoderString + "Ingresa el id del coder a eliminar"));
+
+        Coder objCoder = (Coder) this.objCoderModel.findById(isDelete);
+
+        if(objCoder == null){
+            JOptionPane.showMessageDialog(null, "Coder no encontrado");
+        } else {
+            confirm = JOptionPane.showConfirmDialog(null, "Esta seguro que quieres eliminar el coder?\n" +
+                    objCoder.toString());
+            if (confirm == 0) {
+                this.objCoderModel.delete(objCoder);
+            }
+        }
+    }
+
+    public void findByName() {
+        String listCoder = " --- --- --- --- --- --- --- --- --- \n" +
+                " --- --- --- CODER LIST --- --- --- \n" +
+                " --- --- --- --- --- --- --- --- --- ";
+
+        String isName = JOptionPane.showInputDialog(null, "Ingresa el nombre que quieres buscar");
+
+        Coder objCoder = (Coder) this.objCoderModel.findByName(isName);
+
+        if(objCoder(isName)) {
+            JOptionPane.showMessageDialog(null, "Coder no fue encontrado");
+        } else {
+            JOptionPane.showMessageDialog(null, listCoder + objCoder.toString());
+        }
+    }
+
     public void create (){
         Coder objCoder = new Coder();
         String name = JOptionPane.showInputDialog("Insert name ");

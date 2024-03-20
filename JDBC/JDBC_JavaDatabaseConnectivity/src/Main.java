@@ -27,6 +27,12 @@ public class Main {
                 case "2":
                     objCoderController.create();
                     break;
+                case "4":
+                    objCoderController.delete();
+                    break;
+                case "5":
+                    objCoderController.findByName();
+                    break;
             }
         }while (!option.equals("6"));
 

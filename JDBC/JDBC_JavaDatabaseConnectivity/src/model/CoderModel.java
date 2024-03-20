@@ -5,12 +5,14 @@ import database.ConfigDB;
 import entity.Coder;
 
 import javax.swing.*;
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class CoderModel implements CRUD {
     @Override
@@ -62,7 +64,39 @@ public class CoderModel implements CRUD {
 
     @Override
     public boolean delete(Object object) {
-        return false;
+        // 1. Convertir el objeto a la entidad
+        Coder objCoder = (Coder) object;
+
+        //2. Variable boolean para medir estado de la eliminacion
+        boolean idDeleted = false;
+
+        //3. Abrir la conexion
+
+        Connection objConnection = ConfigDB.openConnection();
+
+        try {
+            // 4. Escribir sentencia SQL
+            String sql = "DELETE FROM coder WHERE id = ?;";
+
+            //5. Preparamos el Statement
+            PreparedStatement objPrepare = objConnection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+
+            //6. Asognamos el valor ?
+            objPrepare.setInt(1, objCoder.getId());
+
+            //7. Total de filas afectadas
+            int filasAfectadas = objPrepare.executeUpdate();
+
+            if (filasAfectadas > 0 ){
+                idDeleted = true;
+                JOptionPane.showMessageDialog(null, "Se elimino coprrectamente ");
+            }
+        }catch (Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+
+        ConfigDB.closeConnection();
+        return idDeleted;
     }
 
     @Override
@@ -112,6 +146,68 @@ public class CoderModel implements CRUD {
 
     @Override
     public Object findById(int id) {
-        return null;
+        //1. Abrir conexion
+        Connection objConnection = ConfigDB.openConnection();
+        Coder objCoder = null;
+
+        try{
+            //2. Sentencia SQL
+            String sql = "SELECT * FROM coder WHERE id = ?;";
+
+            //3. Preparo el Statement
+            PreparedStatement objPrepare = objConnection.prepareStatement(sql);
+
+            // 4. Damos valor al ?
+            objPrepare.setInt(1,id);
+
+            //5. Ejecutamos
+            ResultSet objResult = objPrepare.executeQuery();
+
+            //6. mientras haya un registro
+            while(objResult.next()){
+                objCoder = new Coder();
+                objCoder.setId(objResult.getInt("id"));
+                objCoder.setName(objResult.getString("name"));
+                objCoder.setClan(objResult.getString("clan"));
+                objCoder.setAge(objResult.getInt("age"));
+            }
+
+
+
+
+        }catch (Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+
+        ConfigDB.closeConnection();
+
+        return objCoder;
+    }
+
+    public Object findByName(Object object){
+        //1. Abrir conexion
+        Connection objConnection = ConfigDB.openConnection();
+        Coder objCoder = null;
+
+        try{
+            //2. Sentencia SQL
+            String sql = "SELECT * FROM coder WHERE coder.name = ?;";
+            PreparedStatement objPrepare = objConnection.prepareStatement(sql);
+            objPrepare.setString(1,"name");
+
+            ResultSet objResult = objPrepare.executeQuery();
+
+            while(objResult.next()){
+                objCoder = new Coder();
+                objCoder.setId(objResult.getInt("id"));
+                objCoder.setName(objResult.getString("name"));
+                objCoder.setAge(objResult.getInt("age"));
+                objCoder.setClan(objResult.getString("Clan"));
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        ConfigDB.closeConnection();
+        return objCoder;
     }
 }
