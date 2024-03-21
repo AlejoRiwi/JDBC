@@ -6,10 +6,8 @@ import entity.Coder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.ObjectInputFilter;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +57,43 @@ public class CoderModel implements CRUD {
 
     @Override
     public boolean update(Object object) {
-        return false;
+        //1. abrimnos la conexion
+        Connection objConnection = ConfigDB.openConnection();
+
+        // 2. Convertir el objeto
+        Coder objCoder = (Coder) object;
+
+        //3. Variable bandera para saber si se actualizo
+        boolean isUpdate = false;
+
+        //  se hacen validaciones TODO puede Fallar
+        try {
+          // 4. Se crea la sentencia de SQL
+          String sql = "UPDATE coder SET name =?, age = ?, clan= ?, WHERE id = ?" ;
+
+          //5. Se pepara el Statement
+            PreparedStatement objPrepare = objConnection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
+
+            objPrepare.setString(1,objCoder.getName());
+            objPrepare.setInt(2,objCoder.getAge());
+            objPrepare.setString(3,objCoder.getClan());
+            objPrepare.setInt(4,objCoder.getId());
+
+            int rowAffected = objPrepare.executeUpdate();
+
+            if (rowAffected > 0 ) {
+                isUpdate = true;
+                JOptionPane.showMessageDialog(null, "Se actualizo Correctamanbet");
+            }
+
+            //6. Dar valor a los ? los cuales se llaman parametros de QUERY
+        }catch(Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+
+        //8. Cerrar la conexion
+        ConfigDB.closeConnection();
+        return isUpdate;
     }
 
     @Override
@@ -172,6 +206,9 @@ public class CoderModel implements CRUD {
                 objCoder.setAge(objResult.getInt("age"));
             }
 
+
+
+
         }catch (Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
@@ -181,16 +218,17 @@ public class CoderModel implements CRUD {
         return objCoder;
     }
 
-    public Object findByName(String name){
+    public List<Object> findByName(String name){
         //1. Abrir conexion
+        List<Object> listCoder = new ArrayList<>();
         Connection objConnection = ConfigDB.openConnection();
         Coder objCoder = null;
 
         try{
             //2. Sentencia SQL
-            String sql = "SELECT * FROM coder WHERE coder.name = ?;";
+            String sql = "SELECT * FROM coder WHERE coder.name LIKE ?;";
             PreparedStatement objPrepare = objConnection.prepareStatement(sql);
-            objPrepare.setString(1,name);
+            objPrepare.setString(1,"%"+name+"%");
 
             ResultSet objResult = objPrepare.executeQuery();
 
@@ -200,11 +238,13 @@ public class CoderModel implements CRUD {
                 objCoder.setName(objResult.getString("name"));
                 objCoder.setAge(objResult.getInt("age"));
                 objCoder.setClan(objResult.getString("Clan"));
+
+                listCoder.add(objCoder);
             }
         }catch(Exception e){
-            JOptionPane.showMessageDialog(null, e.getMessage() + "Error de mierda " );
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }
         ConfigDB.closeConnection();
-        return objCoder;
+        return listCoder;
     }
 }

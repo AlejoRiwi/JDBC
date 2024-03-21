@@ -6,6 +6,7 @@ import model.CoderModel;
 
 import javax.swing.*;
 import java.sql.Connection;
+import java.util.List;
 
 public class CoderController {
 
@@ -17,30 +18,27 @@ public class CoderController {
 
     // Metodo para listar todos los coder
     public void getAll(){
-        String list = "--- List coders ---\n";
-        // 1. Se crea la instancia de modelo
+        String list = this.getAll(this.objCoderModel.findAll());
 
-        // iteramos sobre la lista que devuelve el metodo findAll()
-        for (Object obj : this.objCoderModel.findAll()){
+        JOptionPane.showMessageDialog(null, list);
+    }
+
+    // Se sobre escribe el metodo GETALL para hacer imprimir los Objetos
+    public String getAll (List<Object> listObject){
+        String list = "--- List coders ---\n";
+        for (Object obj : listObject){
 
             // Convertimos o casteamos el objeto tipo Object a un coder
             Coder objCoder = (Coder) obj;
 
             // Conectamos la informacion
             list += objCoder.toString() + "\n";
-
         }
-        JOptionPane.showMessageDialog(null, list);
+        return list;
     }
 
-
     public void delete () {
-        String listCoderString = "--- CODER LIST ---\n";
-        for (Object obj : this.objCoderModel.findAll()){
-            Coder objCoder = (Coder) obj;
-
-            listCoderString += objCoder.toString() + "\n";
-        }
+        String listCoderString = this.getAll(this.objCoderModel.findAll());
 
         int confirm = 1;
 
@@ -60,15 +58,17 @@ public class CoderController {
     }
 
     public void findByName() {
-        String listCoder = " --- --- --- --- --- --- --- --- --- \n" +
-                " --- --- --- CODER LIST --- --- --- \n" +
-                " --- --- --- --- --- --- --- --- --- \n";
+        String listCoder = " --- --- --- CODER LIST --- --- --- \n";
 
         String isName = JOptionPane.showInputDialog(null, "Ingresa el nombre que quieres buscar");
 
-        Coder objCoder = (Coder) this.objCoderModel.findByName(isName);
-        JOptionPane.showMessageDialog(null, listCoder + objCoder.toString());
+        String list  = this.getAll(this.objCoderModel.findByName(isName));
 
+        JOptionPane.showMessageDialog(null,list);
+    }
+
+    public void update(Object objeto) {
+        getAll();
     }
 
     public void create (){
@@ -84,5 +84,27 @@ public class CoderController {
         objCoder = (Coder) this.objCoderModel.insert(objCoder);
 
         JOptionPane.showMessageDialog(null, objCoder.toString());
+    }
+
+    public void update(){
+        // Listamos
+        String listCoders = this.getAll(this.objCoderModel.findAll());
+
+        // Pedimos el ID y verificar
+        int idUpdate = Integer.parseInt(JOptionPane.showInputDialog(null,"Ingresa el Id del usuario"));
+
+        Coder objCoder = (Coder) this.objCoderModel.findById(idUpdate);
+
+        if(objCoder == null){
+            JOptionPane.showMessageDialog(null,"El usuario no existe");
+        } else {
+            String newName = JOptionPane.showInputDialog(null, "Ingresa el nombre actualizado",objCoder.getName());
+            int newAge = Integer.parseInt(JOptionPane.showInputDialog(null, "Ingresa la edad actualizada",String.valueOf(objCoder.getAge())));
+            String newClan = JOptionPane.showInputDialog(null, "Ingresa el clan actualizado", objCoder.getClan());
+            objCoder.setName(newName);
+            objCoder.setAge(newAge);
+            objCoder.setClan(newClan);
+            this.objCoderModel.update(objCoder);
+        }
     }
 }
